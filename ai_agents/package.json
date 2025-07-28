@@ -1,0 +1,43 @@
+{
+  "name": "viral-content-ai-agents",
+  "version": "1.0.0",
+  "description": "Agentes de IA especializados para análise de conteúdo viral",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "ai",
+    "analysis",
+    "viral",
+    "content",
+    "openai"
+  ],
+  "author": "Manus AI",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.52.1",
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "axios": "^1.6.2",
+    "canvas": "^3.1.2",
+    "compromise": "^14.14.4",
+    "dotenv": "^16.3.1",
+    "face-api.js": "^0.22.2",
+    "jimp": "^1.6.0",
+    "natural": "^8.1.0",
+    "node-html-parser": "^6.1.12",
+    "openai": "^4.24.1",
+    "sentiment": "^5.0.2",
+    "sharp": "^0.34.3",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

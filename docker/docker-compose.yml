@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:14
+    container_name: viral_postgres
+    environment:
+      POSTGRES_DB: viral_content_db
+      POSTGRES_USER: viral_user
+      POSTGRES_PASSWORD: viral_pass123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - viral_network
+    restart: unless-stopped
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: viral_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - viral_network
+    restart: unless-stopped
+
+  # API Flask
+  api:
+    build:
+      context: ../api/viral_api
+      dockerfile: ../../docker/Dockerfile.api
+    container_name: viral_api
+    environment:
+      - DATABASE_URL=postgresql://viral_user:viral_pass123@postgres:5432/viral_content_db
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_BASE=${OPENAI_API_BASE}
+    volumes:
+      - ../storage:/app/storage
+      - ../logs:/app/logs
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - viral_network
+    restart: unless-stopped
+
+  # Scraping Engine Node.js
+  scraper:
+    build:
+      context: ../scrapers
+      dockerfile: ../docker/Dockerfile.scraper
+    container_name: viral_scraper
+    environment:
+      - DATABASE_URL=postgresql://viral_user:viral_pass123@postgres:5432/viral_content_db
+      - REDIS_URL=redis://redis:6379/0
+      - API_BASE_URL=http://api:5000
+    volumes:
+      - ../storage:/app/storage
+      - ../logs:/app/logs
+      - /dev/shm:/dev/shm
+    depends_on:
+      - postgres
+      - redis
+      - api
+    networks:
+      - viral_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # Frontend React
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: viral_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    depends_on:
+      - api
+    networks:
+      - viral_network
+    restart: unless-stopped
+
+  # Nginx Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: viral_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ../logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - viral_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  viral_network:
+    driver: bridge
+

@@ -1,0 +1,1075 @@
+{
+  "info": {
+    "name": "Viral Content Scraper API",
+    "description": "# 🚀 API de Scraping Inteligente de Conteúdo Viral\n\nUma API completa para coleta, análise e geração de insights sobre conteúdo viral em múltiplas plataformas sociais.\n\n## 🎯 Funcionalidades Principais\n\n- **Scraping Inteligente**: Coleta automatizada de conteúdo viral\n- **Análise com IA**: Processamento avançado com GPT-4 Vision\n- **Templates Virais**: Extração e adaptação de padrões de sucesso\n- **Análise de Perfis**: Análise completa de perfis Instagram\n- **Tendências**: Identificação de padrões virais em tempo real\n- **Administração**: Gerenciamento completo do sistema\n- **Webhooks**: Notificações em tempo real\n\n## 🔐 Autenticação\n\nA API utiliza autenticação JWT Bearer Token:\n```\nAuthorization: Bearer <seu_token_jwt>\n```\n\n## 📊 Rate Limiting\n\n- **Usuário Padrão**: 1000 requests/hora, 100 requests/minuto\n- **Usuário Premium**: 5000 requests/hora, 500 requests/minuto\n- **Usuário Business**: 15000 requests/hora, 1500 requests/minuto\n\n## 🌐 Base URL\n\n- **Produção**: `https://api.viralscraper.com/api/v1`\n- **Desenvolvimento**: `http://localhost:5000/api/v1`\n",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "seu_token_jwt_aqui",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Analysis",
+      "item": [
+        {
+          "name": "Analisar conteúdo específico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analysis/content/{content_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analysis",
+                "content",
+                "{content_id}"
+              ]
+            },
+            "description": "Realiza análise completa de um conteúdo (sentiment, visual, métricas)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Análise em lote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analysis/batch",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analysis",
+                "batch"
+              ]
+            },
+            "description": "Analisa múltiplos conteúdos simultaneamente (máximo 50)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Análise de sentimento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analysis/sentiment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analysis",
+                "sentiment"
+              ]
+            },
+            "description": "Analisa sentimento e emoções de texto",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scraping",
+      "item": [
+        {
+          "name": "Scraping do Instagram",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scraping/instagram",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "scraping",
+                "instagram"
+              ]
+            },
+            "description": "Inicia scraping de conteúdo viral do Instagram",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Status da sessão de scraping",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scraping/sessions/{session_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "scraping",
+                "sessions",
+                "{session_id}"
+              ]
+            },
+            "description": "Obtém status e progresso de uma sessão de scraping"
+          }
+        },
+        {
+          "name": "Agendar scraping",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scraping/schedule",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "scraping",
+                "schedule"
+              ]
+            },
+            "description": "Agenda scraping recorrente ou único",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trends",
+      "item": [
+        {
+          "name": "Conteúdo viral em tempo real",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trends/viral",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "trends",
+                "viral"
+              ]
+            },
+            "description": "Detecta conteúdo viral com base em critérios avançados"
+          }
+        },
+        {
+          "name": "Hashtags em tendência",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trends/hashtags",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "trends",
+                "hashtags"
+              ]
+            },
+            "description": "Monitora hashtags em ascensão e crescimento explosivo"
+          }
+        },
+        {
+          "name": "Criadores em ascensão",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trends/creators",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "trends",
+                "creators"
+              ]
+            },
+            "description": "Identifica criadores com crescimento acelerado"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "item": [
+        {
+          "name": "Listar templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates"
+              ]
+            },
+            "description": "Busca templates com filtros avançados"
+          }
+        },
+        {
+          "name": "Criar template personalizado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates"
+              ]
+            },
+            "description": "Cria um novo template baseado em especificações",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Buscar template específico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates/{template_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates",
+                "{template_id}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Deletar template",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates/{template_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates",
+                "{template_id}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Extrair template de conteúdo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates/extract",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates",
+                "extract"
+              ]
+            },
+            "description": "Extrai template de conteúdo viral existente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Adaptar template existente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates/adapt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates",
+                "adapt"
+              ]
+            },
+            "description": "Adapta template para objetivo e nicho específicos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Busca avançada de templates",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/templates/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "templates",
+                "search"
+              ]
+            },
+            "description": "Busca templates com critérios complexos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        {
+          "name": "Analisar perfil completo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profiles/analyze",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "analyze"
+              ]
+            },
+            "description": "Análise completa de perfil com extração de padrões virais",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Buscar análise de perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profiles/{username}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "{username}"
+              ]
+            },
+            "description": "Recupera análise mais recente de um perfil"
+          }
+        },
+        {
+          "name": "Listar análises de perfis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles"
+              ]
+            },
+            "description": "Lista todas as análises de perfis com filtros"
+          }
+        },
+        {
+          "name": "Comparar múltiplos perfis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profiles/compare",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "compare"
+              ]
+            },
+            "description": "Compara métricas e padrões entre perfis",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Análise em lote de perfis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profiles/batch-analyze",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "batch-analyze"
+              ]
+            },
+            "description": "Analisa múltiplos perfis simultaneamente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Status do sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/system/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "system",
+                "status"
+              ]
+            },
+            "description": "Obtém status completo de todos os serviços e métricas do sistema"
+          }
+        },
+        {
+          "name": "Iniciar serviço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services/{service_id}/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services",
+                "{service_id}",
+                "start"
+              ]
+            },
+            "description": "Inicia um serviço específico do sistema"
+          }
+        },
+        {
+          "name": "Parar serviço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services/{service_id}/stop",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services",
+                "{service_id}",
+                "stop"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Reiniciar serviço",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/services/{service_id}/restart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "services",
+                "{service_id}",
+                "restart"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Logs do sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "logs"
+              ]
+            },
+            "description": "Obtém logs centralizados de todos os serviços"
+          }
+        },
+        {
+          "name": "Criar backup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/backup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "backup"
+              ]
+            },
+            "description": "Cria backup completo ou parcial do sistema",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Executar manutenção",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/maintenance",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "maintenance"
+              ]
+            },
+            "description": "Executa tarefas de manutenção do sistema",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Listar webhooks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks"
+              ]
+            },
+            "description": "Lista todos os webhooks registrados"
+          }
+        },
+        {
+          "name": "Registrar webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks"
+              ]
+            },
+            "description": "Registra novo webhook para receber notificações",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Buscar webhook específico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/{webhook_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "{webhook_id}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Atualizar webhook",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/{webhook_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "{webhook_id}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Deletar webhook",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/{webhook_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "{webhook_id}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Testar webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/{webhook_id}/test",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "{webhook_id}",
+                "test"
+              ]
+            },
+            "description": "Envia evento de teste para validar webhook",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Disparar evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/events/trigger",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webhooks",
+                "events",
+                "trigger"
+              ]
+            },
+            "description": "Dispara evento manualmente para webhooks relevantes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  // Adicione os dados da requisição aqui\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

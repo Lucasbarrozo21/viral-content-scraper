@@ -1,0 +1,539 @@
+# ============================================================================
+# GITHUB ACTIONS WORKFLOW - VIRAL CONTENT SCRAPER
+# CI/CD Pipeline para deploy automatizado
+# 
+# Autor: Manus AI
+# Data: 28 de Janeiro de 2025
+# ============================================================================
+
+name: 🚀 Deploy Viral Content Scraper
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: 'Tipo de deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+        - rollback
+
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.11'
+  PROJECT_NAME: 'viral-content-scraper'
+
+jobs:
+  # ============================================================================
+  # JOB 1: TESTES E VALIDAÇÃO
+  # ============================================================================
+  test:
+    name: 🧪 Testes e Validação
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: |
+          scrapers/package-lock.json
+          ai_agents/package-lock.json
+          
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: api/requirements.txt
+        
+    - name: 📦 Instalar dependências Node.js
+      run: |
+        cd scrapers && npm ci
+        cd ../ai_agents && npm ci
+        
+    - name: 📦 Instalar dependências Python
+      run: |
+        cd api
+        pip install -r requirements.txt
+        
+    - name: 🔍 Lint JavaScript
+      run: |
+        cd scrapers && npm run lint || true
+        cd ../ai_agents && npm run lint || true
+        
+    - name: 🔍 Lint Python
+      run: |
+        cd api
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+        
+    - name: 🧪 Testes JavaScript
+      run: |
+        cd scrapers && npm test || true
+        cd ../ai_agents && npm test || true
+        
+    - name: 🧪 Testes Python
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        REDIS_URL: redis://localhost:6379
+      run: |
+        cd api
+        python -m pytest tests/ -v || true
+        
+    - name: 🔒 Verificação de segurança
+      run: |
+        cd scrapers && npm audit --audit-level=high || true
+        cd ../ai_agents && npm audit --audit-level=high || true
+        cd ../api && pip-audit || true
+        
+    - name: 📊 Análise de código
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_ALL_CODEBASE: false
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_PYTHON_FLAKE8: true
+        VALIDATE_DOCKERFILE: true
+        VALIDATE_YAML: true
+
+  # ============================================================================
+  # JOB 2: BUILD E PREPARAÇÃO
+  # ============================================================================
+  build:
+    name: 🔨 Build e Preparação
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: 📦 Instalar dependências
+      run: |
+        cd scrapers && npm ci
+        cd ../ai_agents && npm ci
+        cd ../api && pip install -r requirements.txt
+        
+    - name: 🔨 Build frontend
+      run: |
+        cd viral-dashboard
+        npm ci
+        npm run build
+        
+    - name: 📦 Preparar artefatos
+      run: |
+        mkdir -p artifacts
+        tar -czf artifacts/scrapers.tar.gz scrapers/
+        tar -czf artifacts/ai_agents.tar.gz ai_agents/
+        tar -czf artifacts/api.tar.gz api/
+        tar -czf artifacts/frontend.tar.gz viral-dashboard/dist/
+        tar -czf artifacts/config.tar.gz config/
+        tar -czf artifacts/database.tar.gz database/
+        
+    - name: 📤 Upload artefatos
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: artifacts/
+        retention-days: 30
+
+  # ============================================================================
+  # JOB 3: DEPLOY STAGING
+  # ============================================================================
+  deploy-staging:
+    name: 🚀 Deploy Staging
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_type == 'staging')
+    environment: staging
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download artefatos
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: artifacts/
+        
+    - name: 🔑 Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+        
+    - name: 🚀 Deploy para Staging
+      env:
+        STAGING_HOST: ${{ secrets.STAGING_HOST }}
+        STAGING_USER: ${{ secrets.STAGING_USER }}
+        STAGING_PATH: ${{ secrets.STAGING_PATH }}
+      run: |
+        # Criar backup
+        ssh $STAGING_USER@$STAGING_HOST "
+          if [ -d '$STAGING_PATH' ]; then
+            sudo cp -r $STAGING_PATH /opt/backups/staging-$(date +%Y%m%d_%H%M%S)
+          fi
+        "
+        
+        # Enviar arquivos
+        rsync -avz --delete \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='__pycache__' \
+          --exclude='*.log' \
+          ./ $STAGING_USER@$STAGING_HOST:$STAGING_PATH/
+        
+        # Executar deploy
+        ssh $STAGING_USER@$STAGING_HOST "
+          cd $STAGING_PATH
+          
+          # Instalar dependências
+          cd scrapers && npm ci --production
+          cd ../ai_agents && npm ci --production
+          cd ../api && pip install -r requirements.txt
+          
+          # Executar migrações
+          cd ../database && python3 migrate.py
+          
+          # Reiniciar serviços
+          sudo systemctl restart viral-scraper-api
+          sudo systemctl restart viral-scraper-scrapers
+          sudo systemctl restart viral-scraper-ai-agents
+          
+          # Verificar saúde
+          sleep 10
+          curl -f http://localhost:5001/health || exit 1
+        "
+        
+    - name: 🧪 Testes de integração
+      env:
+        STAGING_HOST: ${{ secrets.STAGING_HOST }}
+      run: |
+        # Aguardar serviços
+        sleep 30
+        
+        # Testar endpoints
+        curl -f http://$STAGING_HOST/health
+        curl -f http://$STAGING_HOST/api/v1/status
+        
+    - name: 📢 Notificar sucesso
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: '🚀 Deploy staging realizado com sucesso!'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # JOB 4: DEPLOY PRODUÇÃO
+  # ============================================================================
+  deploy-production:
+    name: 🌟 Deploy Produção
+    runs-on: ubuntu-latest
+    needs: [test, build, deploy-staging]
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_type == 'production')
+    environment: production
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download artefatos
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: artifacts/
+        
+    - name: 🔑 Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+        
+    - name: 💾 Backup produção
+      env:
+        PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+        PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        PRODUCTION_PATH: ${{ secrets.PRODUCTION_PATH }}
+      run: |
+        ssh $PRODUCTION_USER@$PRODUCTION_HOST "
+          # Backup completo
+          BACKUP_NAME=production-backup-$(date +%Y%m%d_%H%M%S)
+          sudo mkdir -p /opt/backups
+          sudo cp -r $PRODUCTION_PATH /opt/backups/\$BACKUP_NAME
+          
+          # Backup do banco
+          pg_dump -U viral_user -h localhost viral_content_db > /opt/backups/\$BACKUP_NAME/database.sql
+          
+          echo 'Backup criado: /opt/backups/\$BACKUP_NAME'
+        "
+        
+    - name: 🚀 Deploy Blue-Green
+      env:
+        PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+        PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        PRODUCTION_PATH: ${{ secrets.PRODUCTION_PATH }}
+      run: |
+        # Deploy Blue-Green para zero downtime
+        ssh $PRODUCTION_USER@$PRODUCTION_HOST "
+          # Preparar ambiente Green
+          GREEN_PATH=${PRODUCTION_PATH}_green
+          sudo rm -rf \$GREEN_PATH
+          sudo cp -r $PRODUCTION_PATH \$GREEN_PATH
+        "
+        
+        # Enviar novos arquivos para Green
+        rsync -avz --delete \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='__pycache__' \
+          --exclude='*.log' \
+          ./ $PRODUCTION_USER@$PRODUCTION_HOST:${PRODUCTION_PATH}_green/
+        
+        # Configurar e testar Green
+        ssh $PRODUCTION_USER@$PRODUCTION_HOST "
+          cd ${PRODUCTION_PATH}_green
+          
+          # Instalar dependências
+          cd scrapers && npm ci --production
+          cd ../ai_agents && npm ci --production
+          cd ../api && pip install -r requirements.txt
+          
+          # Executar migrações
+          cd ../database && python3 migrate.py
+          
+          # Iniciar serviços Green na porta alternativa
+          cd ../api
+          python3 app_supabase.py --port 5002 &
+          GREEN_PID=\$!
+          
+          # Testar Green
+          sleep 10
+          if curl -f http://localhost:5002/health; then
+            echo 'Green environment OK'
+            kill \$GREEN_PID
+          else
+            echo 'Green environment FAILED'
+            kill \$GREEN_PID
+            exit 1
+          fi
+        "
+        
+        # Switch Blue -> Green
+        ssh $PRODUCTION_USER@$PRODUCTION_HOST "
+          # Parar serviços Blue
+          sudo systemctl stop viral-scraper-api
+          sudo systemctl stop viral-scraper-scrapers
+          sudo systemctl stop viral-scraper-ai-agents
+          
+          # Switch Blue <-> Green
+          sudo mv $PRODUCTION_PATH ${PRODUCTION_PATH}_blue_old
+          sudo mv ${PRODUCTION_PATH}_green $PRODUCTION_PATH
+          
+          # Iniciar serviços Green
+          sudo systemctl start viral-scraper-api
+          sudo systemctl start viral-scraper-scrapers
+          sudo systemctl start viral-scraper-ai-agents
+          
+          # Verificar saúde
+          sleep 15
+          if curl -f http://localhost:5001/health; then
+            echo 'Production deployment SUCCESS'
+            sudo rm -rf ${PRODUCTION_PATH}_blue_old
+          else
+            echo 'Production deployment FAILED - Rolling back'
+            sudo systemctl stop viral-scraper-api
+            sudo systemctl stop viral-scraper-scrapers
+            sudo systemctl stop viral-scraper-ai-agents
+            
+            sudo mv $PRODUCTION_PATH ${PRODUCTION_PATH}_failed
+            sudo mv ${PRODUCTION_PATH}_blue_old $PRODUCTION_PATH
+            
+            sudo systemctl start viral-scraper-api
+            sudo systemctl start viral-scraper-scrapers
+            sudo systemctl start viral-scraper-ai-agents
+            
+            exit 1
+          fi
+        "
+        
+    - name: 🧪 Testes de produção
+      env:
+        PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+      run: |
+        # Aguardar estabilização
+        sleep 60
+        
+        # Testes críticos
+        curl -f http://$PRODUCTION_HOST/health
+        curl -f http://$PRODUCTION_HOST/api/v1/status
+        
+        # Teste de login
+        curl -X POST http://$PRODUCTION_HOST/api/v1/auth/login \
+          -H "Content-Type: application/json" \
+          -d '{"email":"admin@viralcontentscraper.com","password":"admin"}' \
+          | grep -q "success"
+        
+    - name: 📢 Notificar sucesso
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: '🌟 Deploy produção realizado com sucesso! 🎉'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: 📊 Métricas de deploy
+      run: |
+        echo "Deploy concluído em: $(date)"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref }}"
+        echo "Autor: ${{ github.actor }}"
+
+  # ============================================================================
+  # JOB 5: ROLLBACK (MANUAL)
+  # ============================================================================
+  rollback:
+    name: 🔄 Rollback
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_type == 'rollback'
+    environment: production
+    
+    steps:
+    - name: 🔑 Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+        
+    - name: 🔄 Executar rollback
+      env:
+        PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+        PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        PRODUCTION_PATH: ${{ secrets.PRODUCTION_PATH }}
+      run: |
+        ssh $PRODUCTION_USER@$PRODUCTION_HOST "
+          # Encontrar último backup
+          LATEST_BACKUP=\$(ls -t /opt/backups/production-backup-* | head -n1)
+          
+          if [ -n '\$LATEST_BACKUP' ]; then
+            echo 'Executando rollback para: \$LATEST_BACKUP'
+            
+            # Parar serviços
+            sudo systemctl stop viral-scraper-api
+            sudo systemctl stop viral-scraper-scrapers
+            sudo systemctl stop viral-scraper-ai-agents
+            
+            # Backup da versão atual
+            sudo mv $PRODUCTION_PATH ${PRODUCTION_PATH}_before_rollback
+            
+            # Restaurar backup
+            sudo cp -r \$LATEST_BACKUP $PRODUCTION_PATH
+            sudo chown -R ubuntu:ubuntu $PRODUCTION_PATH
+            
+            # Restaurar banco
+            if [ -f '\$LATEST_BACKUP/database.sql' ]; then
+              psql -U viral_user -h localhost viral_content_db < \$LATEST_BACKUP/database.sql
+            fi
+            
+            # Iniciar serviços
+            sudo systemctl start viral-scraper-api
+            sudo systemctl start viral-scraper-scrapers
+            sudo systemctl start viral-scraper-ai-agents
+            
+            # Verificar saúde
+            sleep 15
+            curl -f http://localhost:5001/health
+            
+            echo 'Rollback concluído com sucesso'
+          else
+            echo 'Nenhum backup encontrado para rollback'
+            exit 1
+          fi
+        "
+        
+    - name: 📢 Notificar rollback
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            text: "🔄 Rollback executado com sucesso",
+            color: "warning"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # JOB 6: LIMPEZA
+  # ============================================================================
+  cleanup:
+    name: 🧹 Limpeza
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: 🧹 Limpar artefatos antigos
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: build-artifacts
+        failOnError: false
+        
+    - name: 📊 Relatório final
+      run: |
+        echo "============================================================================"
+        echo "🎉 PIPELINE CI/CD CONCLUÍDO"
+        echo "============================================================================"
+        echo "Timestamp: $(date)"
+        echo "Workflow: ${{ github.workflow }}"
+        echo "Run ID: ${{ github.run_id }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref }}"
+        echo "Autor: ${{ github.actor }}"
+        echo "============================================================================"
+

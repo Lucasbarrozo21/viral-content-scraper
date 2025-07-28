@@ -1,0 +1,2014 @@
+openapi: 3.0.3
+info:
+  title: Viral Content Scraper API
+  description: |
+    # 🚀 API de Scraping Inteligente de Conteúdo Viral
+    
+    Uma API completa para coleta, análise e geração de insights sobre conteúdo viral em múltiplas plataformas sociais.
+    
+    ## 🎯 Funcionalidades Principais
+    
+    - **Scraping Inteligente**: Coleta automatizada de conteúdo viral
+    - **Análise com IA**: Processamento avançado com GPT-4 Vision
+    - **Templates Virais**: Extração e adaptação de padrões de sucesso
+    - **Análise de Perfis**: Análise completa de perfis Instagram
+    - **Tendências**: Identificação de padrões virais em tempo real
+    - **Administração**: Gerenciamento completo do sistema
+    - **Webhooks**: Notificações em tempo real
+    
+    ## 🔐 Autenticação
+    
+    A API utiliza autenticação JWT Bearer Token:
+    ```
+    Authorization: Bearer <seu_token_jwt>
+    ```
+    
+    ## 📊 Rate Limiting
+    
+    - **Usuário Padrão**: 1000 requests/hora, 100 requests/minuto
+    - **Usuário Premium**: 5000 requests/hora, 500 requests/minuto
+    - **Usuário Business**: 15000 requests/hora, 1500 requests/minuto
+    
+    ## 🌐 Base URL
+    
+    - **Produção**: `https://api.viralscraper.com/api/v1`
+    - **Desenvolvimento**: `http://localhost:5000/api/v1`
+    
+  version: 1.0.0
+  contact:
+    name: Manus AI
+    email: support@viralscraper.com
+    url: https://viralscraper.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.viralscraper.com/api/v1
+    description: Servidor de Produção
+  - url: http://localhost:5000/api/v1
+    description: Servidor de Desenvolvimento
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Analysis
+    description: Endpoints de análise de conteúdo
+  - name: Scraping
+    description: Endpoints de scraping e coleta
+  - name: Trends
+    description: Endpoints de análise de tendências
+  - name: Templates
+    description: Endpoints de gerenciamento de templates
+  - name: Profiles
+    description: Endpoints de análise de perfis
+  - name: Admin
+    description: Endpoints de administração do sistema
+  - name: Webhooks
+    description: Endpoints de gerenciamento de webhooks
+
+paths:
+  # ANALYSIS ENDPOINTS
+  /analysis/content/{content_id}:
+    post:
+      tags: [Analysis]
+      summary: Analisar conteúdo específico
+      description: Realiza análise completa de um conteúdo (sentiment, visual, métricas)
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID único do conteúdo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                analysis_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [sentiment, visual, metrics, all]
+                  default: [all]
+                include_recommendations:
+                  type: boolean
+                  default: true
+                cache_results:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Análise concluída com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /analysis/batch:
+    post:
+      tags: [Analysis]
+      summary: Análise em lote
+      description: Analisa múltiplos conteúdos simultaneamente (máximo 50)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content_ids:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 50
+                analysis_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [sentiment, visual, metrics, all]
+                priority:
+                  type: string
+                  enum: [low, normal, high]
+                  default: normal
+              required: [content_ids]
+      responses:
+        '200':
+          description: Análise em lote iniciada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchAnalysisResponse'
+
+  /analysis/sentiment:
+    post:
+      tags: [Analysis]
+      summary: Análise de sentimento
+      description: Analisa sentimento e emoções de texto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  maxLength: 10000
+                language:
+                  type: string
+                  enum: [pt, en, es, fr]
+                  default: pt
+                include_emotions:
+                  type: boolean
+                  default: true
+                include_triggers:
+                  type: boolean
+                  default: true
+              required: [text]
+      responses:
+        '200':
+          description: Análise de sentimento concluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SentimentAnalysisResponse'
+
+  # SCRAPING ENDPOINTS
+  /scraping/instagram:
+    post:
+      tags: [Scraping]
+      summary: Scraping do Instagram
+      description: Inicia scraping de conteúdo viral do Instagram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_type:
+                  type: string
+                  enum: [hashtag, location, user, explore]
+                target_value:
+                  type: string
+                max_posts:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  default: 50
+                content_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [reel, post, carousel, story]
+                viral_threshold:
+                  type: object
+                  properties:
+                    min_likes:
+                      type: integer
+                      default: 1000
+                    min_comments:
+                      type: integer
+                      default: 50
+                    min_engagement_rate:
+                      type: number
+                      default: 3.0
+              required: [target_type, target_value]
+      responses:
+        '200':
+          description: Scraping iniciado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScrapingResponse'
+
+  /scraping/sessions/{session_id}:
+    get:
+      tags: [Scraping]
+      summary: Status da sessão de scraping
+      description: Obtém status e progresso de uma sessão de scraping
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status da sessão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScrapingSessionResponse'
+
+  /scraping/schedule:
+    post:
+      tags: [Scraping]
+      summary: Agendar scraping
+      description: Agenda scraping recorrente ou único
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schedule_type:
+                  type: string
+                  enum: [once, recurring]
+                cron_expression:
+                  type: string
+                  description: Expressão cron para agendamento
+                scraping_config:
+                  type: object
+                  description: Configuração do scraping
+                active:
+                  type: boolean
+                  default: true
+              required: [schedule_type, scraping_config]
+      responses:
+        '201':
+          description: Agendamento criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  # TRENDS ENDPOINTS
+  /trends/viral:
+    get:
+      tags: [Trends]
+      summary: Conteúdo viral em tempo real
+      description: Detecta conteúdo viral com base em critérios avançados
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, youtube, all]
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [1h, 6h, 24h, 7d]
+            default: 24h
+        - name: content_type
+          in: query
+          schema:
+            type: string
+            enum: [reel, post, carousel, video]
+        - name: min_viral_score
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Conteúdo viral encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViralTrendsResponse'
+
+  /trends/hashtags:
+    get:
+      tags: [Trends]
+      summary: Hashtags em tendência
+      description: Monitora hashtags em ascensão e crescimento explosivo
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, twitter, all]
+        - name: timeframe
+          in: query
+          schema:
+            type: string
+            enum: [1h, 6h, 24h, 7d]
+            default: 24h
+        - name: min_growth_rate
+          in: query
+          schema:
+            type: number
+            minimum: 0
+            default: 50
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [trending, emerging, stable]
+      responses:
+        '200':
+          description: Hashtags em tendência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HashtagTrendsResponse'
+
+  /trends/creators:
+    get:
+      tags: [Trends]
+      summary: Criadores em ascensão
+      description: Identifica criadores com crescimento acelerado
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, youtube]
+        - name: min_followers
+          in: query
+          schema:
+            type: integer
+            default: 10000
+        - name: growth_period
+          in: query
+          schema:
+            type: string
+            enum: [7d, 30d, 90d]
+            default: 30d
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [rising_star, improving, consistent]
+      responses:
+        '200':
+          description: Criadores em tendência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorTrendsResponse'
+
+  # TEMPLATES ENDPOINTS
+  /templates:
+    get:
+      tags: [Templates]
+      summary: Listar templates
+      description: Busca templates com filtros avançados
+      parameters:
+        - name: content_type
+          in: query
+          schema:
+            type: string
+            enum: [carousel, reel, post, story]
+        - name: min_viral_score
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, linkedin, youtube]
+        - name: search_tags
+          in: query
+          schema:
+            type: string
+            description: Tags separadas por vírgula
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [viral_score, created_at, template_quality_score]
+            default: viral_score
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum: [desc, asc]
+            default: desc
+      responses:
+        '200':
+          description: Lista de templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplatesListResponse'
+
+    post:
+      tags: [Templates]
+      summary: Criar template personalizado
+      description: Cria um novo template baseado em especificações
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTemplateRequest'
+      responses:
+        '201':
+          description: Template criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+
+  /templates/{template_id}:
+    get:
+      tags: [Templates]
+      summary: Buscar template específico
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+
+    delete:
+      tags: [Templates]
+      summary: Deletar template
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template deletado com sucesso
+
+  /templates/extract:
+    post:
+      tags: [Templates]
+      summary: Extrair template de conteúdo
+      description: Extrai template de conteúdo viral existente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content_url:
+                  type: string
+                  format: uri
+                content_type:
+                  type: string
+                  enum: [carousel, reel, post, story, auto]
+                  default: auto
+                analysis_depth:
+                  type: string
+                  enum: [basic, standard, deep]
+                  default: standard
+                save_template:
+                  type: boolean
+                  default: true
+              required: [content_url]
+      responses:
+        '200':
+          description: Template extraído com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractedTemplateResponse'
+
+  /templates/adapt:
+    post:
+      tags: [Templates]
+      summary: Adaptar template existente
+      description: Adapta template para objetivo e nicho específicos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template_id:
+                  type: string
+                adaptation_request:
+                  type: object
+                  properties:
+                    objective:
+                      type: string
+                      enum: [lead_generation, sales, awareness, engagement]
+                    niche:
+                      type: string
+                      enum: [fitness, business, lifestyle, tech, beauty, food, travel, education]
+                    target_audience:
+                      type: string
+                    platform:
+                      type: string
+                      enum: [instagram, tiktok, linkedin, youtube]
+                    brand_name:
+                      type: string
+                    brand_colors:
+                      type: array
+                      items:
+                        type: string
+                        pattern: '^#[0-9A-Fa-f]{6}$'
+                    brand_voice:
+                      type: string
+                      enum: [professional, casual, humorous, authoritative, inspirational]
+              required: [template_id, adaptation_request]
+      responses:
+        '200':
+          description: Template adaptado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdaptedTemplateResponse'
+
+  /templates/search:
+    post:
+      tags: [Templates]
+      summary: Busca avançada de templates
+      description: Busca templates com critérios complexos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Texto de busca
+                filters:
+                  type: object
+                  properties:
+                    content_types:
+                      type: array
+                      items:
+                        type: string
+                    min_viral_score:
+                      type: integer
+                    platforms:
+                      type: array
+                      items:
+                        type: string
+                    niches:
+                      type: array
+                      items:
+                        type: string
+                    date_range:
+                      type: object
+                      properties:
+                        start:
+                          type: string
+                          format: date
+                        end:
+                          type: string
+                          format: date
+                sort:
+                  type: object
+                  properties:
+                    by:
+                      type: string
+                      enum: [viral_score, created_at, relevance]
+                    order:
+                      type: string
+                      enum: [desc, asc]
+                limit:
+                  type: integer
+                  default: 20
+      responses:
+        '200':
+          description: Resultados da busca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateSearchResponse'
+
+  # PROFILES ENDPOINTS
+  /profiles/analyze:
+    post:
+      tags: [Profiles]
+      summary: Analisar perfil completo
+      description: Análise completa de perfil com extração de padrões virais
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_url:
+                  type: string
+                  format: uri
+                  description: URL do perfil a ser analisado
+                analysis_depth:
+                  type: string
+                  enum: [basic, standard, deep]
+                  default: standard
+                  description: |
+                    - basic: 20 posts, métricas apenas
+                    - standard: 50 posts, análise de conteúdo
+                    - deep: 100 posts, análise completa com IA
+                options:
+                  type: object
+                  properties:
+                    max_posts:
+                      type: integer
+                      minimum: 10
+                      maximum: 200
+                      default: 50
+                    include_stories:
+                      type: boolean
+                      default: false
+                    include_detailed_metrics:
+                      type: boolean
+                      default: true
+                    save_results:
+                      type: boolean
+                      default: true
+                    use_cache:
+                      type: boolean
+                      default: false
+              required: [profile_url]
+      responses:
+        '200':
+          description: Análise de perfil concluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileAnalysisResponse'
+
+  /profiles/{username}:
+    get:
+      tags: [Profiles]
+      summary: Buscar análise de perfil
+      description: Recupera análise mais recente de um perfil
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, youtube, linkedin]
+            default: instagram
+      responses:
+        '200':
+          description: Análise do perfil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileAnalysisResponse'
+
+  /profiles:
+    get:
+      tags: [Profiles]
+      summary: Listar análises de perfis
+      description: Lista todas as análises de perfis com filtros
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, youtube, linkedin]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [analyzed_at, followers, viral_rate]
+            default: analyzed_at
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum: [desc, asc]
+            default: desc
+      responses:
+        '200':
+          description: Lista de análises de perfis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfilesListResponse'
+
+  /profiles/compare:
+    post:
+      tags: [Profiles]
+      summary: Comparar múltiplos perfis
+      description: Compara métricas e padrões entre perfis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usernames:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 2
+                  maxItems: 10
+                platform:
+                  type: string
+                  enum: [instagram, tiktok, youtube, linkedin]
+                  default: instagram
+                comparison_metrics:
+                  type: array
+                  items:
+                    type: string
+                    enum: [followers, engagement_rate, viral_rate, content_type_distribution, posting_frequency]
+                  default: [followers, engagement_rate, viral_rate]
+              required: [usernames]
+      responses:
+        '200':
+          description: Comparação de perfis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileComparisonResponse'
+
+  /profiles/batch-analyze:
+    post:
+      tags: [Profiles]
+      summary: Análise em lote de perfis
+      description: Analisa múltiplos perfis simultaneamente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                  minItems: 1
+                  maxItems: 20
+                analysis_depth:
+                  type: string
+                  enum: [basic, standard, deep]
+                  default: standard
+                batch_options:
+                  type: object
+                  properties:
+                    max_concurrent:
+                      type: integer
+                      minimum: 1
+                      maximum: 5
+                      default: 3
+                    delay_between_analyses:
+                      type: integer
+                      description: Delay em milissegundos
+                      default: 5000
+                    save_results:
+                      type: boolean
+                      default: true
+              required: [profile_urls]
+      responses:
+        '200':
+          description: Análise em lote iniciada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchProfileAnalysisResponse'
+
+  # ADMIN ENDPOINTS
+  /admin/system/status:
+    get:
+      tags: [Admin]
+      summary: Status do sistema
+      description: Obtém status completo de todos os serviços e métricas do sistema
+      security:
+        - AdminAuth: []
+      responses:
+        '200':
+          description: Status do sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStatusResponse'
+
+  /admin/services/{service_id}/start:
+    post:
+      tags: [Admin]
+      summary: Iniciar serviço
+      description: Inicia um serviço específico do sistema
+      security:
+        - AdminAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [scrapers, ai_agents, api, frontend, database, redis]
+      responses:
+        '200':
+          description: Serviço iniciado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceActionResponse'
+
+  /admin/services/{service_id}/stop:
+    post:
+      tags: [Admin]
+      summary: Parar serviço
+      security:
+        - AdminAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [scrapers, ai_agents, api, frontend, database, redis]
+      responses:
+        '200':
+          description: Serviço parado com sucesso
+
+  /admin/services/{service_id}/restart:
+    post:
+      tags: [Admin]
+      summary: Reiniciar serviço
+      security:
+        - AdminAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [scrapers, ai_agents, api, frontend, database, redis]
+      responses:
+        '200':
+          description: Serviço reiniciado com sucesso
+
+  /admin/logs:
+    get:
+      tags: [Admin]
+      summary: Logs do sistema
+      description: Obtém logs centralizados de todos os serviços
+      security:
+        - AdminAuth: []
+      parameters:
+        - name: service
+          in: query
+          schema:
+            type: string
+            enum: [scrapers, ai_agents, api, database, redis, all]
+            default: all
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [error, warning, info, debug, all]
+            default: all
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Logs do sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemLogsResponse'
+
+  /admin/backup:
+    post:
+      tags: [Admin]
+      summary: Criar backup
+      description: Cria backup completo ou parcial do sistema
+      security:
+        - AdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                backup_type:
+                  type: string
+                  enum: [full, database_only, config_only]
+                  default: full
+                include_media:
+                  type: boolean
+                  default: true
+                compress:
+                  type: boolean
+                  default: true
+                encrypt:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Backup criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupResponse'
+
+  /admin/maintenance:
+    post:
+      tags: [Admin]
+      summary: Executar manutenção
+      description: Executa tarefas de manutenção do sistema
+      security:
+        - AdminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tasks:
+                  type: array
+                  items:
+                    type: string
+                    enum: [cleanup_old_data, optimize_database, clear_cache, update_statistics, check_disk_space]
+                  default: [cleanup_old_data, optimize_database]
+      responses:
+        '200':
+          description: Manutenção concluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceResponse'
+
+  # WEBHOOKS ENDPOINTS
+  /webhooks:
+    get:
+      tags: [Webhooks]
+      summary: Listar webhooks
+      description: Lista todos os webhooks registrados
+      responses:
+        '200':
+          description: Lista de webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksListResponse'
+
+    post:
+      tags: [Webhooks]
+      summary: Registrar webhook
+      description: Registra novo webhook para receber notificações
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL que receberá as notificações
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum: [content_analyzed, viral_content_found, scraping_completed, profile_analyzed, template_generated, all]
+                  description: Eventos que o webhook deve receber
+                secret:
+                  type: string
+                  description: Chave secreta para assinatura HMAC (opcional)
+                max_retries:
+                  type: integer
+                  minimum: 0
+                  maximum: 10
+                  default: 3
+                retry_delay:
+                  type: integer
+                  minimum: 1
+                  maximum: 300
+                  default: 5
+                timeout:
+                  type: integer
+                  minimum: 5
+                  maximum: 120
+                  default: 30
+                metadata:
+                  type: object
+                  description: Metadados adicionais
+              required: [url]
+      responses:
+        '201':
+          description: Webhook registrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+
+  /webhooks/{webhook_id}:
+    get:
+      tags: [Webhooks]
+      summary: Buscar webhook específico
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+
+    put:
+      tags: [Webhooks]
+      summary: Atualizar webhook
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+                secret:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Webhook atualizado com sucesso
+
+    delete:
+      tags: [Webhooks]
+      summary: Deletar webhook
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Webhook deletado com sucesso
+
+  /webhooks/{webhook_id}/test:
+    post:
+      tags: [Webhooks]
+      summary: Testar webhook
+      description: Envia evento de teste para validar webhook
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                  default: webhook_test
+                test_data:
+                  type: object
+      responses:
+        '200':
+          description: Teste enviado com sucesso
+
+  /webhooks/events/trigger:
+    post:
+      tags: [Webhooks]
+      summary: Disparar evento
+      description: Dispara evento manualmente para webhooks relevantes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                event_data:
+                  type: object
+              required: [event_type]
+      responses:
+        '200':
+          description: Evento disparado com sucesso
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT para autenticação de usuários
+    AdminAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT com privilégios de administrador
+
+  schemas:
+    # RESPONSE SCHEMAS
+    AnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            content_id:
+              type: string
+            analysis_results:
+              type: object
+              properties:
+                sentiment_analysis:
+                  $ref: '#/components/schemas/SentimentAnalysis'
+                visual_analysis:
+                  $ref: '#/components/schemas/VisualAnalysis'
+                metrics_analysis:
+                  $ref: '#/components/schemas/MetricsAnalysis'
+            viral_score:
+              type: integer
+              minimum: 0
+              maximum: 100
+            recommendations:
+              type: array
+              items:
+                $ref: '#/components/schemas/Recommendation'
+        timestamp:
+          type: string
+          format: date-time
+
+    SentimentAnalysis:
+      type: object
+      properties:
+        overall_sentiment:
+          type: string
+          enum: [positive, negative, neutral]
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        emotions:
+          type: object
+          properties:
+            joy:
+              type: number
+            anger:
+              type: number
+            fear:
+              type: number
+            sadness:
+              type: number
+            surprise:
+              type: number
+            disgust:
+              type: number
+            trust:
+              type: number
+            anticipation:
+              type: number
+        psychological_triggers:
+          type: array
+          items:
+            type: string
+        persuasion_techniques:
+          type: array
+          items:
+            type: string
+
+    VisualAnalysis:
+      type: object
+      properties:
+        composition_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        color_analysis:
+          type: object
+          properties:
+            dominant_colors:
+              type: array
+              items:
+                type: string
+            color_harmony:
+              type: number
+            emotional_impact:
+              type: string
+        quality_metrics:
+          type: object
+          properties:
+            sharpness:
+              type: number
+            exposure:
+              type: number
+            noise_level:
+              type: number
+        viral_potential:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    MetricsAnalysis:
+      type: object
+      properties:
+        engagement_rate:
+          type: number
+        viral_velocity:
+          type: number
+        audience_quality:
+          type: number
+        growth_prediction:
+          type: object
+          properties:
+            next_24h:
+              type: number
+            next_7d:
+              type: number
+            confidence:
+              type: number
+
+    Recommendation:
+      type: object
+      properties:
+        type:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        recommendation:
+          type: string
+        expected_impact:
+          type: string
+        implementation_difficulty:
+          type: string
+          enum: [easy, medium, hard]
+
+    ScrapingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            session_id:
+              type: string
+            status:
+              type: string
+              enum: [started, running, completed, failed]
+            target_info:
+              type: object
+            estimated_completion:
+              type: string
+              format: date-time
+        timestamp:
+          type: string
+          format: date-time
+
+    TemplateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            template_id:
+              type: string
+            template_name:
+              type: string
+            content_type:
+              type: string
+            viral_score:
+              type: integer
+            visual_structure:
+              type: object
+            content_formula:
+              type: object
+            performance_metrics:
+              type: object
+            extraction_metadata:
+              type: object
+        timestamp:
+          type: string
+          format: date-time
+
+    ProfileAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            profile_info:
+              type: object
+              properties:
+                username:
+                  type: string
+                platform:
+                  type: string
+                followers:
+                  type: integer
+                following:
+                  type: integer
+                posts_count:
+                  type: integer
+                is_verified:
+                  type: boolean
+                engagement_potential:
+                  type: integer
+            content_analysis:
+              type: object
+              properties:
+                total_posts:
+                  type: integer
+                viral_posts:
+                  type: integer
+                viral_rate:
+                  type: string
+                avg_engagement_rate:
+                  type: number
+            patterns:
+              type: object
+            insights:
+              type: object
+            templates:
+              type: array
+              items:
+                type: object
+        timestamp:
+          type: string
+          format: date-time
+
+    WebhookResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            webhook_id:
+              type: string
+            url:
+              type: string
+            events:
+              type: array
+              items:
+                type: string
+            active:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+            delivery_count:
+              type: integer
+            failure_count:
+              type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    SystemStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            services:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    enum: [running, stopped, error]
+                  port:
+                    type: integer
+            system_metrics:
+              type: object
+              properties:
+                cpu_usage:
+                  type: string
+                memory_usage:
+                  type: string
+                disk_usage:
+                  type: string
+            uptime:
+              type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # REQUEST SCHEMAS
+    CreateTemplateRequest:
+      type: object
+      properties:
+        template_name:
+          type: string
+        content_type:
+          type: string
+          enum: [carousel, reel, post, story]
+        visual_structure:
+          type: object
+        content_formula:
+          type: object
+        target_platforms:
+          type: array
+          items:
+            type: string
+        search_tags:
+          type: array
+          items:
+            type: string
+      required: [template_name, content_type]
+
+    # ERROR RESPONSES
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: string
+        error_code:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # ADDITIONAL RESPONSE SCHEMAS
+    BatchAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            batch_id:
+              type: string
+            total_content:
+              type: integer
+            estimated_completion:
+              type: string
+              format: date-time
+            status:
+              type: string
+
+    SentimentAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/SentimentAnalysis'
+        timestamp:
+          type: string
+          format: date-time
+
+    ScrapingSessionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            session_id:
+              type: string
+            status:
+              type: string
+            progress:
+              type: object
+              properties:
+                current_step:
+                  type: string
+                completed_posts:
+                  type: integer
+                total_posts:
+                  type: integer
+                percentage:
+                  type: number
+            results_summary:
+              type: object
+
+    ScheduleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            schedule_id:
+              type: string
+            next_execution:
+              type: string
+              format: date-time
+            status:
+              type: string
+
+    ViralTrendsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            viral_content:
+              type: array
+              items:
+                type: object
+            trends_summary:
+              type: object
+            insights:
+              type: array
+              items:
+                type: object
+
+    HashtagTrendsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            trending_hashtags:
+              type: array
+              items:
+                type: object
+            growth_analysis:
+              type: object
+
+    CreatorTrendsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            trending_creators:
+              type: array
+              items:
+                type: object
+            growth_metrics:
+              type: object
+
+    TemplatesListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            templates:
+              type: array
+              items:
+                $ref: '#/components/schemas/TemplateResponse'
+            pagination:
+              type: object
+              properties:
+                total:
+                  type: integer
+                limit:
+                  type: integer
+                offset:
+                  type: integer
+                has_more:
+                  type: boolean
+
+    ExtractedTemplateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            template:
+              $ref: '#/components/schemas/TemplateResponse'
+            extraction_status:
+              type: string
+            saved:
+              type: boolean
+
+    AdaptedTemplateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            adapted_template:
+              $ref: '#/components/schemas/TemplateResponse'
+            original_template:
+              $ref: '#/components/schemas/TemplateResponse'
+            adaptation_summary:
+              type: object
+
+    TemplateSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/TemplateResponse'
+            total_found:
+              type: integer
+            returned:
+              type: integer
+
+    ProfilesListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            profiles:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProfileAnalysisResponse'
+            summary:
+              type: object
+
+    ProfileComparisonResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            profiles_compared:
+              type: integer
+            comparison_data:
+              type: object
+            rankings:
+              type: object
+            insights:
+              type: array
+              items:
+                type: string
+
+    BatchProfileAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            batch_id:
+              type: string
+            total_profiles:
+              type: integer
+            results:
+              type: array
+              items:
+                type: object
+
+    ServiceActionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        service_id:
+          type: string
+        action:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    SystemLogsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            logs:
+              type: array
+              items:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  service:
+                    type: string
+                  level:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+            total_found:
+              type: integer
+
+    BackupResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            backup_id:
+              type: string
+            backup_type:
+              type: string
+            size:
+              type: string
+            location:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+
+    MaintenanceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            maintenance_id:
+              type: string
+            tasks_requested:
+              type: array
+              items:
+                type: string
+            results:
+              type: object
+            total_duration:
+              type: string
+
+    WebhooksListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            webhooks:
+              type: array
+              items:
+                $ref: '#/components/schemas/WebhookResponse'
+            summary:
+              type: object
+              properties:
+                total_webhooks:
+                  type: integer
+                active_webhooks:
+                  type: integer
+                total_deliveries:
+                  type: integer
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Parâmetros obrigatórios não fornecidos"
+            error_code: "MISSING_PARAMETERS"
+            timestamp: "2025-01-27T10:30:00Z"
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Recurso não encontrado"
+            error_code: "NOT_FOUND"
+            timestamp: "2025-01-27T10:30:00Z"
+
+    Unauthorized:
+      description: Não autorizado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Token de autenticação inválido ou expirado"
+            error_code: "UNAUTHORIZED"
+            timestamp: "2025-01-27T10:30:00Z"
+
+    RateLimitExceeded:
+      description: Limite de requisições excedido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Limite de requisições excedido"
+            error_code: "RATE_LIMIT_EXCEEDED"
+            timestamp: "2025-01-27T10:30:00Z"
+
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Erro interno do servidor"
+            error_code: "INTERNAL_ERROR"
+            timestamp: "2025-01-27T10:30:00Z"
+
+  examples:
+    ContentAnalysisRequest:
+      summary: Análise completa de conteúdo
+      value:
+        analysis_types: ["sentiment", "visual", "metrics"]
+        include_recommendations: true
+        cache_results: true
+
+    InstagramScrapingRequest:
+      summary: Scraping de hashtag no Instagram
+      value:
+        target_type: "hashtag"
+        target_value: "fitness"
+        max_posts: 100
+        content_types: ["reel", "post"]
+        viral_threshold:
+          min_likes: 5000
+          min_comments: 100
+          min_engagement_rate: 5.0
+
+    TemplateExtractionRequest:
+      summary: Extração de template de post viral
+      value:
+        content_url: "https://instagram.com/p/ABC123"
+        content_type: "carousel"
+        analysis_depth: "deep"
+        save_template: true
+
+    ProfileAnalysisRequest:
+      summary: Análise completa de perfil
+      value:
+        profile_url: "https://instagram.com/username"
+        analysis_depth: "standard"
+        options:
+          max_posts: 50
+          include_detailed_metrics: true
+          save_results: true
+
+    WebhookRegistrationRequest:
+      summary: Registro de webhook para conteúdo viral
+      value:
+        url: "https://myapp.com/webhook"
+        events: ["viral_content_found", "content_analyzed"]
+        secret: "minha_chave_secreta"
+        max_retries: 3
+        metadata:
+          description: "Webhook para notificações de conteúdo viral"
+          owner: "user@example.com"
+

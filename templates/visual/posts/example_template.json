@@ -1,0 +1,409 @@
+{
+  "templateId": "tmpl_ins_post_1706380800_vir1",
+  "templateName": "High-Impact Quote Post Template for Instagram",
+  "createdAt": "2025-01-27T18:00:00.000Z",
+  "version": "1.0",
+  
+  "metadata": {
+    "sourceImage": "/uploads/viral_quote_post_example.jpg",
+    "platform": "instagram",
+    "contentType": "post",
+    "niche": "motivation",
+    "extractionMethod": "ai_visual_analysis",
+    "originalPerformance": {
+      "likes": 45600,
+      "comments": 1200,
+      "shares": 890,
+      "saves": 3400,
+      "engagementRate": 8.7
+    }
+  },
+  
+  "scores": {
+    "viralScore": 92,
+    "adaptabilityScore": 88,
+    "complexityScore": 35,
+    "usabilityScore": 94
+  },
+  
+  "visualStructure": {
+    "dimensions": {
+      "width": 1080,
+      "height": 1080
+    },
+    "aspectRatio": "1:1",
+    "layout": {
+      "type": "single_focus",
+      "gridSystem": {
+        "columns": 12,
+        "rows": 12,
+        "gutters": {
+          "horizontal": 16,
+          "vertical": 16
+        }
+      },
+      "contentAreas": {
+        "background": {
+          "position": {"x": 0, "y": 0},
+          "size": {"width": "100%", "height": "100%"}
+        },
+        "mainQuote": {
+          "position": {"x": "center", "y": "center"},
+          "size": {"width": "80%", "height": "auto"},
+          "alignment": "center"
+        },
+        "author": {
+          "position": {"x": "center", "y": "bottom-20%"},
+          "size": {"width": "60%", "height": "auto"},
+          "alignment": "center"
+        }
+      }
+    },
+    "hierarchy": [
+      {
+        "level": 1,
+        "element": "main_quote",
+        "weight": 100,
+        "visualPriority": "primary"
+      },
+      {
+        "level": 2,
+        "element": "author_name",
+        "weight": 60,
+        "visualPriority": "secondary"
+      },
+      {
+        "level": 3,
+        "element": "background_elements",
+        "weight": 30,
+        "visualPriority": "supporting"
+      }
+    ],
+    "spacing": {
+      "baseUnit": 8,
+      "margins": {
+        "top": 80,
+        "right": 60,
+        "bottom": 80,
+        "left": 60
+      },
+      "elementSpacing": {
+        "quote_to_author": 40,
+        "line_height": 1.4,
+        "letter_spacing": 0.02
+      }
+    },
+    "focalPoints": [
+      {
+        "element": "main_quote",
+        "coordinates": {"x": 540, "y": 450},
+        "strength": 95,
+        "type": "text_focal"
+      }
+    ]
+  },
+  
+  "designElements": {
+    "colorScheme": {
+      "primary": "#2C3E50",
+      "secondary": "#E74C3C",
+      "accent": "#F39C12",
+      "background": "#ECF0F1",
+      "text": "#2C3E50",
+      "textSecondary": "#7F8C8D",
+      "harmony": 89,
+      "contrast": 92
+    },
+    "typography": {
+      "mainQuote": {
+        "fontFamily": "Montserrat",
+        "weight": "bold",
+        "size": "42px",
+        "lineHeight": "1.3",
+        "letterSpacing": "-0.02em",
+        "textAlign": "center",
+        "color": "#2C3E50"
+      },
+      "authorName": {
+        "fontFamily": "Open Sans",
+        "weight": "semibold",
+        "size": "18px",
+        "lineHeight": "1.4",
+        "letterSpacing": "0.05em",
+        "textAlign": "center",
+        "color": "#E74C3C"
+      },
+      "authorTitle": {
+        "fontFamily": "Open Sans",
+        "weight": "regular",
+        "size": "14px",
+        "lineHeight": "1.4",
+        "letterSpacing": "0.03em",
+        "textAlign": "center",
+        "color": "#7F8C8D"
+      }
+    },
+    "graphics": [
+      {
+        "type": "decorative_line",
+        "position": {"x": "center", "y": "above_author"},
+        "size": {"width": 60, "height": 2},
+        "color": "#E74C3C",
+        "style": "solid"
+      },
+      {
+        "type": "quote_marks",
+        "position": {"x": "quote_start", "y": "quote_top"},
+        "size": {"width": 24, "height": 24},
+        "color": "#F39C12",
+        "style": "serif"
+      }
+    ],
+    "composition": {
+      "rule": "center_focus",
+      "balance": "symmetrical",
+      "visualWeight": "text_heavy",
+      "contrast": "high",
+      "rhythm": "static"
+    }
+  },
+  
+  "contentFormulas": [
+    {
+      "section": "main_quote",
+      "pattern": "\"[INSPIRATIONAL_STATEMENT] [ACTIONABLE_INSIGHT] [EMOTIONAL_TRIGGER]\"",
+      "characterLimit": 120,
+      "style": "bold_centered",
+      "examples": [
+        "\"O sucesso não é sobre nunca falhar, é sobre nunca desistir de tentar\"",
+        "\"Sua única limitação é a que você aceita em sua mente\"",
+        "\"Grandes conquistas começam com pequenas decisões corajosas\""
+      ]
+    },
+    {
+      "section": "author_name",
+      "pattern": "— [AUTHOR_NAME]",
+      "characterLimit": 30,
+      "style": "semibold_centered",
+      "examples": [
+        "— Steve Jobs",
+        "— Oprah Winfrey",
+        "— Tony Robbins"
+      ]
+    },
+    {
+      "section": "author_title",
+      "pattern": "[PROFESSION/TITLE]",
+      "characterLimit": 40,
+      "style": "regular_centered",
+      "examples": [
+        "Entrepreneur & Visionary",
+        "Media Mogul & Philanthropist",
+        "Life Coach & Author"
+      ]
+    }
+  ],
+  
+  "customizationVariables": {
+    "brandColors": {
+      "primary": {
+        "variable": "primary_color",
+        "defaultValue": "#2C3E50",
+        "description": "Cor principal do texto e elementos"
+      },
+      "accent": {
+        "variable": "accent_color", 
+        "defaultValue": "#E74C3C",
+        "description": "Cor de destaque para autor e elementos decorativos"
+      },
+      "background": {
+        "variable": "background_color",
+        "defaultValue": "#ECF0F1", 
+        "description": "Cor de fundo do post"
+      }
+    },
+    "contentTopics": {
+      "quoteText": {
+        "variable": "main_quote",
+        "type": "text",
+        "maxLength": 120,
+        "description": "Texto principal da citação"
+      },
+      "authorName": {
+        "variable": "author_name",
+        "type": "text", 
+        "maxLength": 30,
+        "description": "Nome do autor da citação"
+      },
+      "authorTitle": {
+        "variable": "author_title",
+        "type": "text",
+        "maxLength": 40,
+        "description": "Título ou profissão do autor"
+      }
+    },
+    "imagery": {
+      "backgroundTexture": {
+        "variable": "bg_texture",
+        "type": "image",
+        "optional": true,
+        "description": "Textura sutil de fundo (opcional)"
+      }
+    },
+    "typography": {
+      "mainFont": {
+        "variable": "quote_font",
+        "defaultValue": "Montserrat",
+        "options": ["Montserrat", "Roboto", "Playfair Display", "Lato"],
+        "description": "Fonte principal para a citação"
+      }
+    }
+  },
+  
+  "adaptationRules": {
+    "platformSpecific": {
+      "instagram": {
+        "aspectRatio": "1:1",
+        "textOverlay": "high",
+        "colorContrast": "high",
+        "fontSize": "large"
+      },
+      "facebook": {
+        "aspectRatio": "1.91:1", 
+        "textOverlay": "moderate",
+        "colorContrast": "moderate",
+        "fontSize": "medium"
+      },
+      "linkedin": {
+        "aspectRatio": "1.91:1",
+        "professionalTone": true,
+        "colorScheme": "conservative",
+        "fontSize": "medium"
+      },
+      "twitter": {
+        "aspectRatio": "16:9",
+        "textOverlay": "minimal", 
+        "colorContrast": "high",
+        "fontSize": "large"
+      }
+    },
+    "nicheSpecific": {
+      "business": {
+        "colors": "professional_blue_gray",
+        "typography": "clean_sans_serif",
+        "tone": "authoritative"
+      },
+      "fitness": {
+        "colors": "energetic_red_orange",
+        "typography": "bold_impact",
+        "tone": "motivational"
+      },
+      "lifestyle": {
+        "colors": "warm_earth_tones",
+        "typography": "elegant_serif",
+        "tone": "aspirational"
+      },
+      "tech": {
+        "colors": "modern_blue_purple",
+        "typography": "futuristic_sans",
+        "tone": "innovative"
+      }
+    }
+  },
+  
+  "viralElements": [
+    {
+      "element": "center_focused_quote",
+      "viralScore": 88,
+      "description": "Citação centralizada com alta legibilidade",
+      "psychologicalTrigger": "authority_wisdom"
+    },
+    {
+      "element": "high_contrast_colors",
+      "viralScore": 85,
+      "description": "Cores contrastantes que chamam atenção",
+      "psychologicalTrigger": "visual_attention"
+    },
+    {
+      "element": "inspirational_message",
+      "viralScore": 92,
+      "description": "Mensagem inspiracional que gera compartilhamento",
+      "psychologicalTrigger": "emotional_resonance"
+    },
+    {
+      "element": "clean_minimalist_design",
+      "viralScore": 79,
+      "description": "Design limpo que facilita leitura e compreensão",
+      "psychologicalTrigger": "cognitive_ease"
+    }
+  ],
+  
+  "usageInstructions": {
+    "difficulty": "beginner",
+    "estimatedTime": "5-10 minutes",
+    "toolsRequired": ["canva", "photoshop", "figma"],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Aplicar cores da marca",
+        "description": "Substituir cores padrão pelas cores da sua marca"
+      },
+      {
+        "step": 2,
+        "action": "Inserir citação",
+        "description": "Adicionar sua citação inspiracional (máx. 120 caracteres)"
+      },
+      {
+        "step": 3,
+        "action": "Definir autor",
+        "description": "Inserir nome e título do autor da citação"
+      },
+      {
+        "step": 4,
+        "action": "Ajustar tipografia",
+        "description": "Escolher fonte que combine com sua marca"
+      },
+      {
+        "step": 5,
+        "action": "Revisar e exportar",
+        "description": "Verificar alinhamento e exportar em alta resolução"
+      }
+    ]
+  },
+  
+  "expectedPerformance": {
+    "engagementRate": {
+      "min": 6.5,
+      "avg": 8.7,
+      "max": 12.3
+    },
+    "shareability": {
+      "score": 89,
+      "factors": ["inspirational_content", "high_readability", "quotable_format"]
+    },
+    "savesRate": {
+      "min": 4.2,
+      "avg": 6.8,
+      "max": 9.5
+    },
+    "demographics": {
+      "primaryAge": "25-34",
+      "secondaryAge": "35-44", 
+      "gender": "balanced",
+      "interests": ["motivation", "self_improvement", "business", "lifestyle"]
+    }
+  },
+  
+  "templateMetadata": {
+    "complexityLevel": "simple",
+    "creationTime": "5-10 minutes",
+    "skillRequired": "beginner",
+    "lastUpdated": "2025-01-27T18:00:00.000Z",
+    "usageCount": 0,
+    "averageRating": null,
+    "tags": ["quote", "inspiration", "motivation", "simple", "high-contrast", "viral"],
+    "category": "motivational_quotes",
+    "subcategory": "business_inspiration"
+  }
+}
+

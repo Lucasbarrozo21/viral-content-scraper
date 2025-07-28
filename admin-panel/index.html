@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Viral Content Scraper</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-crown text-warning"></i>
+                <strong>Admin Panel</strong>
+                <span class="badge bg-warning text-dark ms-2">BILIONÁRIO</span>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-shield"></i> Administrador
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-key"></i> Alterar Senha</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#scrapers" data-section="scrapers">
+                                <i class="fas fa-spider"></i> Scrapers Control
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ai-agents" data-section="ai-agents">
+                                <i class="fas fa-robot"></i> Agentes IA
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#system-doctor" data-section="system-doctor">
+                                <i class="fas fa-stethoscope"></i> System Doctor
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#database" data-section="database">
+                                <i class="fas fa-database"></i> Banco de Dados
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#users" data-section="users">
+                                <i class="fas fa-users"></i> Usuários
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#templates" data-section="templates">
+                                <i class="fas fa-palette"></i> Templates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#analytics" data-section="analytics">
+                                <i class="fas fa-chart-line"></i> Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#logs" data-section="logs">
+                                <i class="fas fa-file-alt"></i> Logs & Debug
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#settings" data-section="settings">
+                                <i class="fas fa-cogs"></i> Configurações
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#backup" data-section="backup">
+                                <i class="fas fa-save"></i> Backup & Restore
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="content-section active">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-crown text-warning"></i>
+                            Dashboard Administrativo
+                            <span class="badge bg-success ms-2">SISTEMA ATIVO</span>
+                        </h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i> Exportar Relatório
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Status Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Scrapers Ativos
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-scrapers">8/8</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-spider fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Agentes IA
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-agents">7/7</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-robot fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Conteúdo Coletado
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="content-collected">1,247,892</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-download fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                System Doctor
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <span class="badge bg-success">ATIVO</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-stethoscope fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-bolt"></i> Ações Rápidas
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-success btn-block" onclick="startAllScrapers()">
+                                                <i class="fas fa-play"></i> Iniciar Todos Scrapers
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-danger btn-block" onclick="stopAllScrapers()">
+                                                <i class="fas fa-stop"></i> Parar Todos Scrapers
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-info btn-block" onclick="trainAI()">
+                                                <i class="fas fa-brain"></i> Treinar IA
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-warning btn-block" onclick="createBackup()">
+                                                <i class="fas fa-save"></i> Backup Completo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-chart-area"></i> Performance do Sistema
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-exclamation-triangle"></i> Alertas Recentes
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recent-alerts">
+                                        <div class="alert alert-success alert-sm" role="alert">
+                                            <i class="fas fa-check-circle"></i> Todos os sistemas operacionais
+                                        </div>
+                                        <div class="alert alert-info alert-sm" role="alert">
+                                            <i class="fas fa-info-circle"></i> Backup automático concluído
+                                        </div>
+                                        <div class="alert alert-warning alert-sm" role="alert">
+                                            <i class="fas fa-exclamation-triangle"></i> Instagram: Rate limit detectado (resolvido)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scrapers Section -->
+                <div id="scrapers-section" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-spider"></i> Controle de Scrapers
+                        </h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-list"></i> Status dos Scrapers
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="scrapersTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Plataforma</th>
+                                                    <th>Status</th>
+                                                    <th>Coletados Hoje</th>
+                                                    <th>Taxa de Sucesso</th>
+                                                    <th>Último Update</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="scrapers-tbody">
+                                                <!-- Dados serão carregados via JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Agents Section -->
+                <div id="ai-agents-section" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-robot"></i> Agentes IA
+                        </h1>
+                    </div>
+
+                    <div class="row" id="ai-agents-grid">
+                        <!-- Agentes IA serão carregados via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- System Doctor Section -->
+                <div id="system-doctor-section" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-stethoscope"></i> System Doctor - IA de Monitoramento
+                        </h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-brain"></i> Status da IA
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="system-doctor-status">
+                                        <!-- Status será carregado via JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-cogs"></i> Controles
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-success" onclick="startSystemDoctor()">
+                                            <i class="fas fa-play"></i> Iniciar Monitoramento
+                                        </button>
+                                        <button class="btn btn-danger" onclick="stopSystemDoctor()">
+                                            <i class="fas fa-stop"></i> Parar Monitoramento
+                                        </button>
+                                        <button class="btn btn-info" onclick="retrainSystemDoctor()">
+                                            <i class="fas fa-graduation-cap"></i> Retreinar IA
+                                        </button>
+                                        <button class="btn btn-warning" onclick="viewSystemDoctorLogs()">
+                                            <i class="fas fa-file-alt"></i> Ver Logs
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Section -->
+                <div id="database-section" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-database"></i> Gerenciamento do Banco de Dados
+                        </h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-table"></i> Estatísticas das Tabelas
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="database-stats">
+                                        <!-- Estatísticas serão carregadas via JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="fas fa-cogs"></i> Configurações Globais
+                        </h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-sliders-h"></i> Configurações do Sistema
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="settings-form">
+                                        <!-- Configurações serão carregadas via JavaScript -->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
+

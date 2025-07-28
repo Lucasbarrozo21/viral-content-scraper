@@ -1,0 +1,51 @@
+{
+  "name": "viral-content-scraper",
+  "version": "1.0.0",
+  "description": "Sistema de scraping inteligente para conteúdo viral",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "scraping",
+    "viral",
+    "content",
+    "ai",
+    "puppeteer"
+  ],
+  "author": "Manus AI",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cheerio": "^1.0.0-rc.12",
+    "delay": "^6.0.0",
+    "dotenv": "^16.6.1",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "node-cron": "^3.0.3",
+    "p-limit": "^5.0.0",
+    "p-queue": "^8.0.1",
+    "pg": "^8.11.3",
+    "proxy-chain": "^2.4.0",
+    "puppeteer": "^21.11.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-recaptcha": "^3.6.8",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "random-useragent": "^0.5.0",
+    "redis": "^4.6.11",
+    "sharp": "^0.33.1",
+    "user-agents": "^1.1.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
